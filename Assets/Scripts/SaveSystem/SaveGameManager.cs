@@ -52,9 +52,9 @@ public class SaveGameManager : MonoBehaviour
         if (!autoSaveEnabled) // si el autoSave esta desactivado,simplemente hacemos que el update deje de funcionar
             return;
 
-        autoSaveTimer += Time.unscaledDeltaTime;
+        autoSaveTimer += Time.unscaledDeltaTime; // le suma el tiempo a la variable autoSaveTimer
 
-        if (autoSaveTimer >= autoSaveInterval)
+        if (autoSaveTimer >= autoSaveInterval) // si el timer llega al tiempo indicado en la variable de intervalo, reinicia el timer y hace un guardado
         {
             autoSaveTimer = 0f;
 
@@ -63,28 +63,30 @@ public class SaveGameManager : MonoBehaviour
         }
     }
 
-    public void Register(ISaveable saveable)
+
+    public void Register(ISaveable saveable) // este es el metodo que va a registrar los objetos que se pueden guardar y añade sus datos iniciales a la caché temporal,
+                                             // saveable es el objeto que vamos a registrar
     {
-        if (saveable == null || string.IsNullOrWhiteSpace(saveable.SaveId))
+        if (saveable == null || string.IsNullOrWhiteSpace(saveable.SaveId)) // si el objeto no existe pues se cancela el metodo
         {
             Debug.LogWarning("SaveSystem: objeto o ID no válido.");
             return;
         }
 
-        if (objects.TryGetValue(saveable.SaveId, out ISaveable existing))
+        if (objects.TryGetValue(saveable.SaveId, out ISaveable existing)) // busca el identificador del objeto dentro del diccionario
         {
-            if (ReferenceEquals(existing, saveable))
+            if (ReferenceEquals(existing, saveable)) // si el bojeto esta duplicado, se cancela el registro
                 return;
 
             Debug.LogError("SaveSystem: ID duplicado: " + saveable.SaveId);
             return;
         }
 
-        objects.Add(saveable.SaveId, saveable);
+        objects.Add(saveable.SaveId, saveable); // añade el objeto al diccionario de objetos
 
         // Guardamos un estado inicial en la caché
         pending[saveable.SaveId] = saveable.CaptureState();
-        isDirty = true;
+        isDirty = true; // indicamos que hay cambios pendientes por hacer
 
         Debug.Log("SaveSystem: registrado " + saveable.SaveId);
     }
