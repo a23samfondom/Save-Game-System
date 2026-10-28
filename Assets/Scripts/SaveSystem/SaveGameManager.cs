@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+// si hay alguna falta, my bad :)
+
 public class SaveGameManager : MonoBehaviour
 {
-    public static SaveGameManager Instance { get; private set; }
+    public static SaveGameManager Instance { get; private set; } // crea una variable statica de tipo SaveGameManager, osea que es esta misma clase, para que otros
+                                                                 // scripts puedan acceder directamente a los metodos.
 
-    [Header("Autosave")]
-    [SerializeField] private bool autoSaveEnabled = true;
-    [SerializeField, Min(1f)] private float autoSaveInterval = 30f;
+    [Header("Autosave")] // esto es simplemente un titulo/header que se muestra en el inspector
+    [SerializeField] private bool autoSaveEnabled = true; // variable que idnica si el autoguardado esta activo, empieza con true
+    [SerializeField, Min(1f)] private float autoSaveInterval = 30f; // variable que indica el intervalo de segundos que hace el autoSave
 
-    private float autoSaveTimer;
-    private bool isDirty;
+    private float autoSaveTimer; // esta variable cuenta el tiempo que ha pasado desde la última comprobación de guardado
+    private bool isDirty; // indica si hay cambios pendientes para guardar
 
-    private readonly Dictionary<string, ISaveable> objects =
-        new Dictionary<string, ISaveable>();
+    private readonly Dictionary<string, ISaveable> objects = new Dictionary<string, ISaveable>(); // este diccionario guarda los objetos registrados para despues guardarlos y cargarlos,
+                                                                                                  // el readonly es para que no se pueda asignar otro diccionario despues de iniciarlo,
+                                                                                                  //pero se pueden meter y quitar elementos. para el objeto que se guarda utilizamos el 
+                                                                                                  // ISaveable que contiene toda la información
 
     // Caché temporal en memoria: todavía no es el archivo definitivo.
     private readonly Dictionary<string, SaveData> pending = new Dictionary<string, SaveData>();
@@ -26,23 +31,25 @@ public class SaveGameManager : MonoBehaviour
     public int PendingCount => pending.Count;
     public bool IsDirty => isDirty;
 
+    // este indica que ruta del guardado de los archivos, devuelve un string, el path.combine combina laruta del archivo, osea que mete el archivo en la ruta de guardado
     public string SavePath => Path.Combine(Application.persistentDataPath, "seal_save.dat");
 
+    // el awake principalmente sirve para que no se ejecuten mas de un gestor de guardado al mismo tiempo 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (Instance != null && Instance != this) // si existe otro gestor, lo elimina
         {
             Destroy(gameObject);
             return;
         }
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        Instance = this; // guarda el objeto que va a gestionar todo, que es el mismo
+        DontDestroyOnLoad(gameObject); // esto hace que no se elimine el objeto al cambiar de escena
     }
 
-    private void Update()
+    private void Update() // en resumen, el update controla el tiempo del autoSave 
     {
-        if (!autoSaveEnabled)
+        if (!autoSaveEnabled) // si el autoSave esta desactivado,simplemente hacemos que el update deje de funcionar
             return;
 
         autoSaveTimer += Time.unscaledDeltaTime;
@@ -113,7 +120,7 @@ public class SaveGameManager : MonoBehaviour
 
         Debug.Log("SaveSystem: cambio registrado en caché: " + saveable.SaveId + " | Pendientes: " + pending.Count);
     }
-
+    
     public void SaveToDisk()
     {
         try
