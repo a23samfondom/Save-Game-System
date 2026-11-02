@@ -88,43 +88,48 @@ public class DemoSaveableObject : MonoBehaviour, ISaveable
 
     public SaveData CaptureState()
     {
-        SaveData data = new SaveData();
-
-        data.id = saveId;
+		// creamos una nueva estructura donde guardaremos los datos
+		SaveData data = new SaveData();
+		// Guardamos el ID y el tipo del objeto
+		data.id = saveId;
         data.type = GetType().Name;
 
-        data.px = transform.position.x;
+		// Guardamos la posicion
+		data.px = transform.position.x;
         data.py = transform.position.y;
         data.pz = transform.position.z;
+		// Recogemos la rotacion actual del objeto
+		Vector3 rotation = transform.eulerAngles;
 
-        Vector3 rotation = transform.eulerAngles;
-
-        data.rx = rotation.x;
+		// Guardamos los tres ejes de la rotacion
+		data.rx = rotation.x;
         data.ry = rotation.y;
         data.rz = rotation.z;
-
-        data.active = gameObject.activeSelf;
+		// Guardamos si esta activo y su valor actual
+		data.active = gameObject.activeSelf;
         data.value = value;
-
-        return data;
+		// Devolvemos todos los datos recogidos
+		return data;
     }
 
     public void RestoreState(SaveData data)
     {
-        if (data == null)
+		// Si no hay datos no hacemos nada
+		if (data == null)
             return;
-
-        if (data.id != saveId)
+		// Comprobamos que los datos pertenezcan a este objeto
+		if (data.id != saveId)
         {
             Debug.LogWarning("SaveSystem: se intentó aplicar un ID incorrecto a " + saveId);
             return;
         }
+		// Recuperamos la posicion guardada
+		transform.position = new Vector3(data.px, data.py, data.pz);
 
-        transform.position = new Vector3(data.px, data.py, data.pz);
-
-        transform.eulerAngles = new Vector3(data.rx, data.ry, data.rz);
-
-        value = data.value;
+		// Recuperamos la rotacion guardada
+		transform.eulerAngles = new Vector3(data.rx, data.ry, data.rz);
+		// Recuperamos el valor guardado
+		value = data.value;
 
         // El componente puede desactivarse; la referencia del manager, se conserva porque no nos desregistramos en OnDisable
         gameObject.SetActive(data.active);
@@ -132,7 +137,9 @@ public class DemoSaveableObject : MonoBehaviour, ISaveable
 
     private void NotifyChange()
     {
-        if (SaveGameManager.Instance != null)
-            SaveGameManager.Instance.NotifyChanged(this);
+		// Comprobamos que exista el manager
+		if (SaveGameManager.Instance != null)
+			// Avisamos al manager para actualizar los datos temporales
+			SaveGameManager.Instance.NotifyChanged(this);
     }
 }
