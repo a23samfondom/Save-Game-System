@@ -132,7 +132,8 @@ public class SaveGameManager : MonoBehaviour
             if (!string.IsNullOrEmpty(directory))
                 Directory.CreateDirectory(directory);
 
-            using (FileStream stream = new FileStream(SavePath, FileMode.Create, FileAccess.Write)) using (BinaryWriter writer = new BinaryWriter(stream))
+            using (FileStream stream = new FileStream(SavePath, FileMode.Create, FileAccess.Write)) 
+            using (BinaryWriter writer = new BinaryWriter(stream))
             {
                 writer.Write(SaveFormatVersion);
                 writer.Write(pending.Count);
@@ -181,7 +182,9 @@ public class SaveGameManager : MonoBehaviour
             Dictionary<string, SaveData> loaded = new Dictionary<string, SaveData>();
 
             // Primero leemos el archivo completo, no modificamos los objetos mientras la lectura sea incompleta
-            using (FileStream stream = new FileStream(SavePath, FileMode.Open, FileAccess.Read)) using (BinaryReader reader = new BinaryReader(stream))
+            using (FileStream stream = new FileStream(SavePath, FileMode.Open, FileAccess.Read)) 
+            using (BinaryReader reader = new BinaryReader(stream))
+
             {
                 int version = reader.ReadInt32();
 
