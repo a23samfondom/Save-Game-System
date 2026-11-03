@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-// si hay alguna falta, my bad :)
 
 public class SaveGameManager : MonoBehaviour
 {
-    public static SaveGameManager Instance { get; private set; } // crea una variable statica de tipo SaveGameManager, osea que es esta misma clase, para que otros
+    public static SaveGameManager Instance { get; private set; } // crea una variable estatica de tipo SaveGameManager, osea que es esta misma clase, para que otros
                                                                  // scripts puedan acceder directamente a los metodos.
 
     [Header("Autosave")] // esto es simplemente un titulo/header que se muestra en el inspector
